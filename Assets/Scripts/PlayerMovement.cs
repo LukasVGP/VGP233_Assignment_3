@@ -6,11 +6,12 @@ public class PlayerMovement : MonoBehaviour
     [Header("References")]
     [SerializeField] private Transform orientation;
     [SerializeField] private Animator animator;
+    [SerializeField] private Transform groundCheck;
     private Rigidbody rb;
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float jumpForce = 5f;
+    [SerializeField] private float jumpForce = 1000f;
     [SerializeField] private float groundDrag = 5f;
     [SerializeField] private float rotateSpeed = 5f;
 
@@ -18,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     private float verticalInput;
     private Vector3 moveDirection;
     private bool isGrounded;
+    private bool shouldJump = false;
 
     void Start()
     {
@@ -37,6 +39,14 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (shouldJump)
+        {
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            rb.AddForce(Vector3.up * jumpForce * 2f, ForceMode.Impulse);
+            Debug.Log($"Jump force applied: {jumpForce}");
+            shouldJump = false;
+        }
+
         MovePlayer();
         ControlSpeed();
         ApplyDrag();
@@ -71,10 +81,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleJump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && isGrounded)
         {
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            shouldJump = true;
+            Debug.Log("Jump requested!");
         }
     }
 
@@ -104,6 +114,7 @@ public class PlayerMovement : MonoBehaviour
         if (other.CompareTag("Ground"))
         {
             isGrounded = true;
+            Debug.Log("Ground Contact Made");
         }
     }
 
@@ -112,6 +123,7 @@ public class PlayerMovement : MonoBehaviour
         if (other.CompareTag("Ground"))
         {
             isGrounded = false;
+            Debug.Log("Left Ground");
         }
     }
 }
