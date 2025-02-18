@@ -1,0 +1,27 @@
+using UnityEngine;
+
+public class MoveCamera : MonoBehaviour
+{
+    public Transform targetToLookAt;
+    public Vector3 offset;
+    public Transform orientation;
+    public float cameraRotateSpeed;
+
+    float xRotation;
+    float yRotation;
+
+    void Update()
+    {
+        transform.position = targetToLookAt.position + offset;
+
+        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * cameraRotateSpeed;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * cameraRotateSpeed;
+
+        yRotation += mouseX;
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90, 90);
+
+        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+        orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+    }
+}
