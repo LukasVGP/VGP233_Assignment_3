@@ -12,19 +12,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private float groundDrag = 5f;
-    [SerializeField] private float rotateSpeed = 10f;
+    [SerializeField] private float rotateSpeed = 5f;
 
     private float horizontalInput;
     private float verticalInput;
-    private float rotationInput;
-    private float yRotation;
     private Vector3 moveDirection;
     private bool isGrounded;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        rb.angularDamping = 10f;
         GameController.Instance.SetPlayerStartPosition(gameObject);
     }
 
@@ -47,13 +46,20 @@ public class PlayerMovement : MonoBehaviour
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
-        rotationInput = Input.GetAxisRaw("Mouse X");
     }
 
     private void HandleRotation()
     {
-        yRotation += rotationInput * Time.deltaTime * rotateSpeed;
-        orientation.rotation = Quaternion.Euler(0.0f, yRotation, 0.0f);
+        if (horizontalInput != 0)
+        {
+            float rotationTorque = horizontalInput * rotateSpeed;
+            rb.AddTorque(Vector3.up * rotationTorque, ForceMode.Acceleration);
+
+            if (orientation != null)
+            {
+                orientation.rotation = transform.rotation;
+            }
+        }
     }
 
     private void UpdateAnimator()
@@ -74,7 +80,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovePlayer()
     {
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        moveDirection = transform.forward * verticalInput;
         rb.AddForce(moveDirection.normalized * moveSpeed * 10, ForceMode.Force);
     }
 
