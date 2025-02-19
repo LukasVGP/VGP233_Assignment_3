@@ -10,7 +10,8 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
 
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float walkSpeed = 5f;
+    [SerializeField] private float runSpeed = 8f;
     [SerializeField] private float jumpForce = 1000f;
     [SerializeField] private float groundDrag = 5f;
     [SerializeField] private float rotateSpeed = 5f;
@@ -20,6 +21,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 moveDirection;
     private bool isGrounded;
     private bool shouldJump = false;
+    private bool isRunning = false;
+    private float currentMoveSpeed;
 
     void Start()
     {
@@ -28,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
         rb.angularDamping = 10f;
         GameController.Instance.SetPlayerStartPosition(gameObject);
         isGrounded = true;
+        currentMoveSpeed = walkSpeed;
     }
 
     void Update()
@@ -36,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
         HandleRotation();
         UpdateAnimator();
         HandleJump();
+        HandleRunning();
     }
 
     void FixedUpdate()
@@ -44,7 +49,6 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
             rb.AddForce(Vector3.up * jumpForce * 2f, ForceMode.Impulse);
-            Debug.Log($"Jump force applied: {jumpForce}");
             shouldJump = false;
         }
 
@@ -59,12 +63,19 @@ public class PlayerMovement : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
     }
 
+    private void HandleRunning()
+    {
+        isRunning = Input.GetKey(KeyCode.LeftShift) && verticalInput > 0;
+        currentMoveSpeed = isRunning ? runSpeed : walkSpeed;
+    }
+
     private void HandleRotation()
     {
         if (horizontalInput != 0)
         {
-            float rotationTorque = horizontalInput * rotateSpeed;
-            rb.AddTorque(Vector3.up * rotationTorque, ForceMode.Acceleration);
+            float rotationAmount = horizontalInput * rotateSpeed;
+            transform.Rotate(Vector3.up * rotationAmount);
+            rb.angularVelocity = Vector3.zero;
 
             if (orientation != null)
             {
@@ -78,6 +89,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("Walk", verticalInput);
         animator.SetFloat("Strafe", horizontalInput);
         animator.SetBool("IsMoving", (Mathf.Abs(horizontalInput) > 0.0f || Mathf.Abs(verticalInput) > 0.0f));
+        animator.SetBool("IsRunning", isRunning);
     }
 
     private void HandleJump()
@@ -85,22 +97,21 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             shouldJump = true;
-            Debug.Log("Jump requested!");
         }
     }
 
     private void MovePlayer()
     {
         moveDirection = transform.forward * verticalInput;
-        rb.AddForce(moveDirection.normalized * moveSpeed * 10, ForceMode.Force);
+        rb.AddForce(moveDirection.normalized * currentMoveSpeed * 10, ForceMode.Force);
     }
 
     private void ControlSpeed()
     {
         Vector3 flatVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-        if (flatVelocity.magnitude > moveSpeed)
+        if (flatVelocity.magnitude > currentMoveSpeed)
         {
-            Vector3 limitedVelocity = flatVelocity.normalized * moveSpeed;
+            Vector3 limitedVelocity = flatVelocity.normalized * currentMoveSpeed;
             rb.linearVelocity = new Vector3(limitedVelocity.x, rb.linearVelocity.y, limitedVelocity.z);
         }
     }
@@ -115,7 +126,6 @@ public class PlayerMovement : MonoBehaviour
         if (other.CompareTag("Ground"))
         {
             isGrounded = true;
-            Debug.Log("Ground Contact Made");
         }
     }
 
@@ -124,7 +134,6 @@ public class PlayerMovement : MonoBehaviour
         if (other.CompareTag("Ground"))
         {
             isGrounded = false;
-            Debug.Log("Left Ground");
         }
     }
 }
