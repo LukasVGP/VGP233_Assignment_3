@@ -27,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         rb.angularDamping = 10f;
         GameController.Instance.SetPlayerStartPosition(gameObject);
+        isGrounded = true;
     }
 
     void Update()
@@ -81,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleJump()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             shouldJump = true;
             Debug.Log("Jump requested!");
