@@ -4,7 +4,8 @@ using UnityEngine.EventSystems;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Transform orientation;
+    [SerializeField] private Transform _orientation;
+    public Transform orientation => _orientation;
     [SerializeField] private Animator animator;
     [SerializeField] private Transform groundCheck;
     private Rigidbody rb;
@@ -29,7 +30,6 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         rb.angularDamping = 10f;
-        GameController.Instance.SetPlayerStartPosition(gameObject);
         isGrounded = true;
         currentMoveSpeed = walkSpeed;
     }
@@ -51,7 +51,6 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(Vector3.up * jumpForce * 2f, ForceMode.Impulse);
             shouldJump = false;
         }
-
         MovePlayer();
         ControlSpeed();
         ApplyDrag();
@@ -76,10 +75,9 @@ public class PlayerMovement : MonoBehaviour
             float rotationAmount = horizontalInput * rotateSpeed;
             transform.Rotate(Vector3.up * rotationAmount);
             rb.angularVelocity = Vector3.zero;
-
-            if (orientation != null)
+            if (_orientation != null)
             {
-                orientation.rotation = transform.rotation;
+                _orientation.rotation = transform.rotation;
             }
         }
     }
@@ -89,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("Walk", verticalInput);
         animator.SetFloat("Strafe", horizontalInput);
         animator.SetBool("IsMoving", (Mathf.Abs(horizontalInput) > 0.0f || Mathf.Abs(verticalInput) > 0.0f));
-        animator.SetBool("IsRunning", isRunning);
+        animator.SetBool("Run", isRunning);
     }
 
     private void HandleJump()

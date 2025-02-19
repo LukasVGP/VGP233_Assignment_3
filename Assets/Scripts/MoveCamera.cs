@@ -15,7 +15,7 @@ public class MoveCamera : MonoBehaviour
     public float positionSmoothTime = 0.95f;
     public float rotationSmoothTime = 0.85f;
     public float followDelay = 0.2f;
-    public float minDistance = 2f; // Minimum distance to maintain from player
+    public float minDistance = 2f;
 
     private float currentAngleDifference;
     private Vector3 smoothVelocity;
@@ -28,17 +28,31 @@ public class MoveCamera : MonoBehaviour
     {
         if (targetToLookAt == null)
         {
-            targetToLookAt = GameObject.FindGameObjectWithTag("Player").transform;
+            enabled = false;
+            return;
         }
+
         transform.position = targetToLookAt.position + offset;
         targetAngle = targetToLookAt.eulerAngles.y;
         currentAngle = targetAngle;
         lastPlayerAngle = targetAngle;
     }
 
+    private void OnEnable()
+    {
+        if (targetToLookAt != null)
+        {
+            transform.position = targetToLookAt.position + offset;
+            targetAngle = targetToLookAt.eulerAngles.y;
+            currentAngle = targetAngle;
+            lastPlayerAngle = targetAngle;
+        }
+    }
+
     private void LateUpdate()
     {
-        // Always keep player in focus by updating look position first
+        if (targetToLookAt == null) return;
+
         Vector3 targetLookPosition = targetToLookAt.position + Vector3.up * targetHeight;
 
         if (Mathf.Abs(Mathf.DeltaAngle(lastPlayerAngle, targetToLookAt.eulerAngles.y)) > 0.1f)
@@ -54,30 +68,30 @@ public class MoveCamera : MonoBehaviour
             targetAngle = targetToLookAt.eulerAngles.y;
         }
 
-        // Smooth rotation while maintaining focus
         currentAngle = Mathf.LerpAngle(currentAngle, targetAngle, Time.deltaTime / rotationSmoothTime);
         Quaternion rotation = Quaternion.Euler(0, currentAngle, 0);
 
-        // Calculate and adjust desired position
         Vector3 desiredPosition = targetToLookAt.position + (rotation * offset);
         Vector3 directionToTarget = targetLookPosition - desiredPosition;
         float distanceToTarget = directionToTarget.magnitude;
 
-        // Ensure minimum distance is maintained
         if (distanceToTarget < minDistance)
         {
             desiredPosition = targetLookPosition - directionToTarget.normalized * minDistance;
         }
 
-        // Update position with maintained focus
         transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref smoothVelocity, positionSmoothTime);
-
-        // Always look at player
         transform.LookAt(targetLookPosition);
 
         if (orientation != null)
         {
             orientation.rotation = Quaternion.Euler(0, targetToLookAt.eulerAngles.y, 0);
         }
+    }
+
+    public void SetTarget(Transform newTarget)
+    {
+        targetToLookAt = newTarget;
+        enabled = true;
     }
 }
