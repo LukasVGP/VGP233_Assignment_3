@@ -7,15 +7,22 @@ public class MoveCamera : MonoBehaviour
     public Transform orientation;
 
     [Header("Camera Position")]
-    public Vector3 offset = new Vector3(0, 2f, -3.5f); // Closer zoom for 50% bigger view
+    public Vector3 offset = new Vector3(0, 2f, -3.5f);
     public float targetHeight = 1.5f;
 
-    [Header("Smoothing")]
-    public float positionSmoothTime = 0.95f; // Much slower position following
-    public float rotationSmoothTime = 0.85f; // Much slower rotation
+    [Header("Camera Behavior")]
+    public float rotationThreshold = 15f;
+    public float positionSmoothTime = 0.95f;
+    public float rotationSmoothTime = 0.85f;
+    public float followDelay = 0.2f;
+    public float minDistance = 2f; // Minimum distance to maintain from player
 
-    private Vector3 smoothVelocity = Vector3.zero;
-    private Quaternion currentRotation;
+    private float currentAngleDifference;
+    private Vector3 smoothVelocity;
+    private float targetAngle;
+    private float currentAngle;
+    private float lastPlayerRotationTime;
+    private float lastPlayerAngle;
 
     private void Start()
     {
@@ -24,36 +31,53 @@ public class MoveCamera : MonoBehaviour
             targetToLookAt = GameObject.FindGameObjectWithTag("Player").transform;
         }
         transform.position = targetToLookAt.position + offset;
-        currentRotation = targetToLookAt.rotation;
+        targetAngle = targetToLookAt.eulerAngles.y;
+        currentAngle = targetAngle;
+        lastPlayerAngle = targetAngle;
     }
 
     private void LateUpdate()
     {
-        // Calculate target positions
+        // Always keep player in focus by updating look position first
         Vector3 targetLookPosition = targetToLookAt.position + Vector3.up * targetHeight;
-        Vector3 desiredPosition = targetToLookAt.position + targetToLookAt.rotation * offset;
 
-        // Smooth position following
-        transform.position = Vector3.SmoothDamp(
-            transform.position,
-            desiredPosition,
-            ref smoothVelocity,
-            positionSmoothTime
-        );
+        if (Mathf.Abs(Mathf.DeltaAngle(lastPlayerAngle, targetToLookAt.eulerAngles.y)) > 0.1f)
+        {
+            lastPlayerRotationTime = Time.time;
+            lastPlayerAngle = targetToLookAt.eulerAngles.y;
+        }
 
-        // Smooth rotation following
-        Vector3 lookDirection = targetLookPosition - transform.position;
-        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            Time.deltaTime / rotationSmoothTime
-        );
+        currentAngleDifference = Mathf.Abs(Mathf.DeltaAngle(currentAngle, targetToLookAt.eulerAngles.y));
 
-        // Update orientation
+        if (currentAngleDifference > rotationThreshold && Time.time > lastPlayerRotationTime + followDelay)
+        {
+            targetAngle = targetToLookAt.eulerAngles.y;
+        }
+
+        // Smooth rotation while maintaining focus
+        currentAngle = Mathf.LerpAngle(currentAngle, targetAngle, Time.deltaTime / rotationSmoothTime);
+        Quaternion rotation = Quaternion.Euler(0, currentAngle, 0);
+
+        // Calculate and adjust desired position
+        Vector3 desiredPosition = targetToLookAt.position + (rotation * offset);
+        Vector3 directionToTarget = targetLookPosition - desiredPosition;
+        float distanceToTarget = directionToTarget.magnitude;
+
+        // Ensure minimum distance is maintained
+        if (distanceToTarget < minDistance)
+        {
+            desiredPosition = targetLookPosition - directionToTarget.normalized * minDistance;
+        }
+
+        // Update position with maintained focus
+        transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref smoothVelocity, positionSmoothTime);
+
+        // Always look at player
+        transform.LookAt(targetLookPosition);
+
         if (orientation != null)
         {
-            orientation.rotation = Quaternion.Euler(0, targetToLookAt.rotation.eulerAngles.y, 0);
+            orientation.rotation = Quaternion.Euler(0, targetToLookAt.eulerAngles.y, 0);
         }
     }
 }
