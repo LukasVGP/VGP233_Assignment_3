@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class KillVolume : MonoBehaviour
 {
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
-            GameManager.Instance.PlayerDied();
+            UIManager.Instance.ShowGameOver();
         }
     }
 }
