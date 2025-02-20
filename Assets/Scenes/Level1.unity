@@ -173,7 +173,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.y
@@ -181,7 +181,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1792,8 +1792,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
+      propertyPath: speed
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.y
@@ -1801,7 +1805,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7303,8 +7307,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
+      propertyPath: speed
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.y
@@ -7312,7 +7320,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7373,7 +7381,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7397137975640516149, guid: fa35722609adf134c92a140b90d1e1a1, type: 3}
       propertyPath: distance
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7434,7 +7442,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.y
@@ -7442,7 +7450,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -8278,7 +8286,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.y
@@ -8286,7 +8294,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12517,7 +12525,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.y
@@ -12525,7 +12533,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12586,7 +12594,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.y
@@ -12594,7 +12602,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12908,8 +12916,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
+      propertyPath: speed
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.y
@@ -12917,7 +12929,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13274,8 +13286,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
+      propertyPath: speed
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.y
@@ -13283,7 +13299,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -15585,8 +15601,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
+      propertyPath: speed
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.y
@@ -15594,7 +15614,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5263193850122822933, guid: 5fae62c9376135343a5db4fdb98652fe, type: 3}
       propertyPath: swingAxis.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
