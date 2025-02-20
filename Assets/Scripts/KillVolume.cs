@@ -6,7 +6,7 @@ public class KillVolume : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            UIManager.Instance.ShowGameOver();
+            GameManager.Instance.PlayerDied();
         }
     }
 }

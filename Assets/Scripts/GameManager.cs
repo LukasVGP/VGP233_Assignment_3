@@ -32,10 +32,26 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        if (GameController.Instance == null)
+        {
+            Debug.LogError("GameController instance is missing!");
+            return;
+        }
+
         currentLives = maxLives;
         currentTime = gameTime;
         isGameActive = true;
         UIManager.Instance.UpdateLives(currentLives);
+
+        // Ensure any existing player is cleaned up
+        GameObject existingPlayer = GameObject.FindGameObjectWithTag("Player");
+        if (existingPlayer != null)
+        {
+            Destroy(existingPlayer);
+        }
+
+        // Spawn new player
+        GameController.Instance.SpawnPlayer();
     }
 
     private void Update()

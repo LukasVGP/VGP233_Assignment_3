@@ -2936,16 +2936,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _orientation: {fileID: 620051644741432511}
   animator: {fileID: 8903687710321359521}
-  groundCheck: {fileID: 906594243146023880}
   walkSpeed: 15
   runSpeed: 30
-  jumpForce: 10
   groundDrag: 5
   rotateSpeed: 0.9
-  groundLayer:
+  jumpForce: 10
+  groundCheckPoint: {fileID: 906594243146023880}
+  groundCheckRadius: 0.3
+  groundMask:
     serializedVersion: 2
     m_Bits: 8
-  groundCheckRadius: 0.3
 --- !u!1 &8692607577877473419
 GameObject:
   m_ObjectHideFlags: 0

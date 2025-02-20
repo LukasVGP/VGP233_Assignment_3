@@ -1,73 +1,86 @@
-
-using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
+using System.Collections.Generic;
+
 public class SpinningObstacle : MonoBehaviour
 {
-    [SerializeField]
-    private Vector3 spinSpeed = Vector3.zero;
+    [SerializeField] private Vector3 spinSpeed = Vector3.zero;
+    [SerializeField] private Transform spinningObject;
 
-    [SerializeField]
-    private Transform spinningObject;
-
-    struct TrackerData
+    private struct TrackerData
     {
         public Vector3 previousPosition;
         public Vector3 velocity;
     }
-    private List<TrackerData> trackerData = new List<TrackerData>();
+    private List<TrackerData> trackerData;
 
-    private void Start()
+    private void Awake()
     {
-        int childCount = transform.childCount;
-        for (int i = 0; i < childCount; ++i)
+        trackerData = new List<TrackerData>();
+        InitializeTrackerData();
+    }
+
+    private void InitializeTrackerData()
+    {
+        trackerData.Clear();
+        for (int i = 0; i < transform.childCount; i++)
         {
-            TrackerData data = new TrackerData();
-            data.previousPosition = transform.GetChild(i).transform.position;
-            data.velocity = Vector3.zero;
+            TrackerData data = new TrackerData
+            {
+                previousPosition = transform.GetChild(i).position,
+                velocity = Vector3.zero
+            };
             trackerData.Add(data);
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        Vector3 spinAmount = spinSpeed * Time.deltaTime;
-        spinningObject.Rotate(spinAmount.x, spinAmount.y, spinAmount.z);
+        if (spinningObject != null)
+        {
+            Vector3 spinAmount = spinSpeed * Time.deltaTime;
+            spinningObject.Rotate(spinAmount.x, spinAmount.y, spinAmount.z);
+        }
 
-        int childCount = transform.childCount;
-        for (int i = 0; i < childCount; ++i)
+        for (int i = 0; i < trackerData.Count && i < transform.childCount; i++)
         {
             TrackerData data = trackerData[i];
-            data.velocity = (transform.GetChild(i).transform.position - data.previousPosition) / Time.deltaTime;
-            data.previousPosition = transform.GetChild(i).transform.position;
+            data.velocity = (transform.GetChild(i).position - data.previousPosition) / Time.deltaTime;
+            data.previousPosition = transform.GetChild(i).position;
             trackerData[i] = data;
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Player")
+        if (collision.gameObject.CompareTag("Player"))
         {
-            Vector3 playerPos = collision.transform.position;
-            int closestTracker = -1;
-            float closestDistanceSq = float.MaxValue;
-            int childCount = transform.childCount;
-            for (int i = 0; i < childCount; ++i)
+            int closestTracker = GetClosestTrackerIndex(collision.transform.position);
+            if (closestTracker >= 0 && closestTracker < trackerData.Count)
             {
-                Vector3 trackerPos = transform.GetChild(i).transform.position;
-                float distSq = Vector3.SqrMagnitude(playerPos - trackerPos);
-                if (distSq < closestDistanceSq)
+                Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();
+                if (rb != null)
                 {
-                    closestDistanceSq = distSq;
-                    closestTracker = i;
+                    rb.AddForce(trackerData[closestTracker].velocity * 500.0f);
                 }
             }
-            if (closestTracker >= 0)
+        }
+    }
+
+    private int GetClosestTrackerIndex(Vector3 position)
+    {
+        float closestDistanceSq = float.MaxValue;
+        int closestIndex = -1;
+
+        for (int i = 0; i < transform.childCount && i < trackerData.Count; i++)
+        {
+            float distSq = Vector3.SqrMagnitude(position - transform.GetChild(i).position);
+            if (distSq < closestDistanceSq)
             {
-                TrackerData data = trackerData[closestTracker];
-                collision.rigidbody.AddForce(data.velocity * 500.0f);
+                closestDistanceSq = distSq;
+                closestIndex = i;
             }
         }
+
+        return closestIndex;
     }
 }

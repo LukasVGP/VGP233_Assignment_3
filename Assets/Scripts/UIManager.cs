@@ -6,19 +6,6 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
     [Header("UI Panels")]
     [SerializeField] private GameObject mainMenuUI;
     [SerializeField] private GameObject gameplayUI;
@@ -30,6 +17,28 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI scoreText;
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            ValidateReferences();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void ValidateReferences()
+    {
+        if (mainMenuUI == null) Debug.LogError("Main Menu UI reference is missing!");
+        if (gameplayUI == null) Debug.LogError("Gameplay UI reference is missing!");
+        if (gameOverUI == null) Debug.LogError("Game Over UI reference is missing!");
+        if (winScreenUI == null) Debug.LogError("Win Screen UI reference is missing!");
+    }
+
     private void Start()
     {
         ShowMainMenu();
@@ -37,59 +46,58 @@ public class UIManager : MonoBehaviour
 
     public void ShowMainMenu()
     {
+        if (mainMenuUI == null) return;
+
         mainMenuUI.SetActive(true);
-        gameplayUI.SetActive(false);
-        gameOverUI.SetActive(false);
-        winScreenUI.SetActive(false);
+        if (gameplayUI != null) gameplayUI.SetActive(false);
+        if (gameOverUI != null) gameOverUI.SetActive(false);
+        if (winScreenUI != null) winScreenUI.SetActive(false);
+
+        if (GameObject.FindGameObjectWithTag("Player") != null)
+        {
+            Destroy(GameObject.FindGameObjectWithTag("Player"));
+        }
     }
 
     public void ShowGameplay()
     {
-        mainMenuUI.SetActive(false);
-        gameplayUI.SetActive(true);
-        gameOverUI.SetActive(false);
-        winScreenUI.SetActive(false);
+        if (mainMenuUI != null) mainMenuUI.SetActive(false);
+        if (gameplayUI != null) gameplayUI.SetActive(true);
+        if (gameOverUI != null) gameOverUI.SetActive(false);
+        if (winScreenUI != null) winScreenUI.SetActive(false);
     }
 
     public void ShowGameOver()
     {
-        mainMenuUI.SetActive(false);
-        gameplayUI.SetActive(false);
-        gameOverUI.SetActive(true);
-        winScreenUI.SetActive(false);
+        if (mainMenuUI != null) mainMenuUI.SetActive(false);
+        if (gameplayUI != null) gameplayUI.SetActive(false);
+        if (gameOverUI != null) gameOverUI.SetActive(true);
+        if (winScreenUI != null) winScreenUI.SetActive(false);
     }
 
     public void ShowWinScreen()
     {
-        mainMenuUI.SetActive(false);
-        gameplayUI.SetActive(false);
-        gameOverUI.SetActive(false);
-        winScreenUI.SetActive(true);
+        if (mainMenuUI != null) mainMenuUI.SetActive(false);
+        if (gameplayUI != null) gameplayUI.SetActive(false);
+        if (gameOverUI != null) gameOverUI.SetActive(false);
+        if (winScreenUI != null) winScreenUI.SetActive(true);
     }
 
     public void StartGame()
     {
-        if (GameManager.Instance != null)
+        if (GameManager.Instance == null)
         {
-            GameManager.Instance.StartGame();
+            Debug.LogError("GameManager instance is missing! Ensure GameManager exists in the scene.");
+            return;
         }
 
         ShowGameplay();
+        GameManager.Instance.StartGame();
+    }
 
-        if (gameplayUI != null)
-        {
-            gameplayUI.SetActive(true);
-
-            if (livesText != null)
-            {
-                livesText.gameObject.SetActive(true);
-            }
-
-            if (timerText != null)
-            {
-                timerText.gameObject.SetActive(true);
-            }
-        }
+    public void ReturnToMainMenu()
+    {
+        ShowMainMenu();
     }
 
     public void UpdateLives(int lives)
@@ -121,7 +129,7 @@ public class UIManager : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-            Application.Quit();
+        Application.Quit();
 #endif
     }
 }

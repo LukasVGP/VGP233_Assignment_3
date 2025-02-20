@@ -7,17 +7,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform _orientation;
     public Transform orientation => _orientation;
     [SerializeField] private Animator animator;
-    [SerializeField] private Transform groundCheck;
     private Rigidbody rb;
 
     [Header("Movement Settings")]
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float runSpeed = 8f;
-    [SerializeField] private float jumpForce = 1000f;
     [SerializeField] private float groundDrag = 5f;
     [SerializeField] private float rotateSpeed = 5f;
-    [SerializeField] private LayerMask groundLayer;
+
+    [Header("Jump Settings")]
+    [SerializeField] private float jumpForce = 7f;
+
+    [Header("Ground Check")]
+    [SerializeField] private Transform groundCheckPoint;
     [SerializeField] private float groundCheckRadius = 0.3f;
+    [SerializeField] private LayerMask groundMask;
 
     private float horizontalInput;
     private float verticalInput;
@@ -58,7 +62,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckGround()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
+        isGrounded = Physics.CheckSphere(groundCheckPoint.position, groundCheckRadius, groundMask);
+        Debug.DrawLine(groundCheckPoint.position, groundCheckPoint.position + Vector3.down * groundCheckRadius, isGrounded ? Color.green : Color.red);
     }
 
     private void GetPlayerInput()
@@ -108,7 +113,7 @@ public class PlayerMovement : MonoBehaviour
     private void PerformJump()
     {
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        rb.AddForce(Vector3.up * jumpForce * rb.mass, ForceMode.Impulse);
         shouldJump = false;
     }
 

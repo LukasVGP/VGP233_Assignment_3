@@ -31,7 +31,7 @@ public class GameController : MonoBehaviour
         SpawnPlayer();
     }
 
-    private void SpawnPlayer()
+    public void SpawnPlayer()
     {
         if (playerPrefab != null && startPoint != null)
         {
@@ -79,8 +79,8 @@ public class GameController : MonoBehaviour
 
         if (player.TryGetComponent<Rigidbody>(out Rigidbody rb))
         {
-            rb.position = respawnPosition;
             rb.linearVelocity = Vector3.zero;
+            rb.position = respawnPosition;
         }
     }
 
