@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class EndPoint : MonoBehaviour
 {
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
-            GameManager.Instance.PlayerWon();
+            UIManager.Instance.ShowWinScreen();
         }
     }
 }
