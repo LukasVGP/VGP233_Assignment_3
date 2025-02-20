@@ -1,22 +1,21 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
     [Header("Screens")]
-    [SerializeField] private GameObject mainMenuScreen;
-    [SerializeField] private GameObject gameplayScreen;
-    [SerializeField] private GameObject gameOverScreen;
-    [SerializeField] private GameObject winScreen;
+    [SerializeField] private GameObject mainMenuUI;
+    [SerializeField] private GameObject gameplayUI;
+    [SerializeField] private GameObject gameOverUI;
+    [SerializeField] private GameObject winScreenUI;
 
     [Header("HUD Elements")]
-    [SerializeField] private Image heartIcon;
-    [SerializeField] private TMP_Text livesCountText;
-    [SerializeField] private TMP_Text timerText;
+    [SerializeField] private TextMeshProUGUI livesText;
+    [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private GameObject heartIcon;
 
     private void Awake()
     {
@@ -38,59 +37,64 @@ public class UIManager : MonoBehaviour
 
     public void ShowMainMenu()
     {
-        mainMenuScreen.SetActive(true);
-        gameplayScreen.SetActive(false);
-        gameOverScreen.SetActive(false);
-        winScreen.SetActive(false);
+        mainMenuUI.SetActive(true);
+        gameplayUI.SetActive(false);
+        gameOverUI.SetActive(false);
+        winScreenUI.SetActive(false);
     }
 
-    public void StartGame()
+    public void ShowGameplay()
     {
-        mainMenuScreen.SetActive(false);
-        gameplayScreen.SetActive(true);
-        gameOverScreen.SetActive(false);
-        winScreen.SetActive(false);
-        GameManager.Instance.StartGame();
+        mainMenuUI.SetActive(false);
+        gameplayUI.SetActive(true);
+        gameOverUI.SetActive(false);
+        winScreenUI.SetActive(false);
     }
 
     public void ShowGameOver()
     {
-        mainMenuScreen.SetActive(false);
-        gameplayScreen.SetActive(false);
-        gameOverScreen.SetActive(true);
-        winScreen.SetActive(false);
+        mainMenuUI.SetActive(false);
+        gameplayUI.SetActive(false);
+        gameOverUI.SetActive(true);
+        winScreenUI.SetActive(false);
     }
 
     public void ShowWinScreen()
     {
-        mainMenuScreen.SetActive(false);
-        gameplayScreen.SetActive(false);
-        gameOverScreen.SetActive(false);
-        winScreen.SetActive(true);
+        mainMenuUI.SetActive(false);
+        gameplayUI.SetActive(false);
+        gameOverUI.SetActive(false);
+        winScreenUI.SetActive(true);
     }
 
-    public void UpdateLives(int currentLives)
+    public void UpdateLives(int lives)
     {
-        livesCountText.text = currentLives.ToString();
+        if (livesText != null)
+        {
+            livesText.text = $"x{lives}";
+        }
     }
 
-    public void UpdateTimer(float timeLeft)
+    public void UpdateTimer(float timeRemaining)
     {
-        int minutes = Mathf.FloorToInt(timeLeft / 60);
-        int seconds = Mathf.FloorToInt(timeLeft % 60);
-        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        if (timerText != null)
+        {
+            int minutes = Mathf.FloorToInt(timeRemaining / 60);
+            int seconds = Mathf.FloorToInt(timeRemaining % 60);
+            timerText.text = $"{minutes:00}:{seconds:00}";
+        }
     }
 
-    public void RestartGame()
+    public void StartGame()
+    {
+        ShowGameplay();
+        GameManager.Instance.StartGame();
+    }
+
+    public void ReturnToMainMenu()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        StartGame();
-    }
-
-    public void BackToMainMenu()
-    {
         ShowMainMenu();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void QuitGame()
