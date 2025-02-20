@@ -30,6 +30,19 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.ShowMainMenu();
     }
 
+    private void Update()
+    {
+        if (!isGameActive) return;
+
+        currentTime -= Time.deltaTime;
+        UIManager.Instance.UpdateTimerText(currentTime);
+
+        if (currentTime <= 0)
+        {
+            GameOver();
+        }
+    }
+
     public void StartGame()
     {
         if (GameController.Instance == null)
@@ -43,26 +56,13 @@ public class GameManager : MonoBehaviour
         isGameActive = true;
         UIManager.Instance.UpdateLives(currentLives);
 
-        // Ensure any existing player is cleaned up
         GameObject existingPlayer = GameObject.FindGameObjectWithTag("Player");
         if (existingPlayer != null)
         {
             Destroy(existingPlayer);
         }
 
-        // Spawn new player
         GameController.Instance.SpawnPlayer();
-    }
-
-    private void Update()
-    {
-        if (!isGameActive) return;
-
-        currentTime -= Time.deltaTime;
-        if (currentTime <= 0)
-        {
-            GameOver();
-        }
     }
 
     public void PlayerDied()

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -23,6 +24,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundCheckRadius = 0.3f;
     [SerializeField] private LayerMask groundMask;
 
+    [Header("Gravity Settings")]
+    [SerializeField] private float fallMultiplier = 2.5f;
+
     private float horizontalInput;
     private float verticalInput;
     private Vector3 moveDirection;
@@ -30,6 +34,8 @@ public class PlayerMovement : MonoBehaviour
     private bool shouldJump = false;
     private bool isRunning = false;
     private float currentMoveSpeed;
+    private bool isStunned = false;
+    private float stunTimer = 0f;
 
     void Start()
     {
@@ -41,6 +47,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (isStunned) return;
+
         CheckGround();
         GetPlayerInput();
         HandleRotation();
@@ -51,6 +59,8 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isStunned) return;
+
         if (shouldJump)
         {
             PerformJump();
@@ -58,6 +68,36 @@ public class PlayerMovement : MonoBehaviour
         MovePlayer();
         ControlSpeed();
         ApplyDrag();
+        ApplyCustomGravity();
+    }
+
+    private void ApplyCustomGravity()
+    {
+        if (rb.linearVelocity.y < 0)
+        {
+            rb.AddForce(Vector3.down * fallMultiplier, ForceMode.Acceleration);
+        }
+    }
+
+    public void HitPlayer(Vector3 force, float stunDuration)
+    {
+        if (!isStunned)
+        {
+            rb.AddForce(force, ForceMode.Impulse);
+            isStunned = true;
+            stunTimer = stunDuration;
+            StartCoroutine(StunRoutine());
+        }
+    }
+
+    private IEnumerator StunRoutine()
+    {
+        while (stunTimer > 0)
+        {
+            stunTimer -= Time.deltaTime;
+            yield return null;
+        }
+        isStunned = false;
     }
 
     private void CheckGround()
