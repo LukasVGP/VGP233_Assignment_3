@@ -2,102 +2,83 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    private static GameController instance;
-    public static GameController Instance { get { return instance; } }
+    public static GameController Instance { get; private set; }
 
-    [Header("Game Setup")]
+    [Header("Player Settings")]
     [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private Transform startPoint;
-    [SerializeField] private Transform checkPointsContainer;
+    [SerializeField] private Transform spawnPoint;
 
-    private GameObject currentPlayer;
-    private int lastCheckPointIndex = -1;
-    private SaveManager saveManager;
+    [Header("Camera Settings")]
+    [SerializeField] private GameObject playerCamera;
+
+    private Transform currentCheckpoint;
+    private int checkpointIndex = 0;
 
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
         {
             Destroy(gameObject);
-            return;
         }
-        instance = this;
-        DontDestroyOnLoad(gameObject);
-        InitializeSaveManager();
-    }
-
-    private void Start()
-    {
-        SpawnPlayer();
     }
 
     public void SpawnPlayer()
     {
-        if (playerPrefab != null && startPoint != null)
+        Vector3 spawnPosition = spawnPoint != null ? spawnPoint.position : Vector3.zero;
+        Quaternion spawnRotation = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
+
+        if (playerPrefab != null)
         {
-            currentPlayer = Instantiate(playerPrefab, startPoint.position, startPoint.rotation);
-
-            MoveCamera cameraScript = FindObjectOfType<MoveCamera>();
-            if (cameraScript != null)
+            GameObject player = Instantiate(playerPrefab, spawnPosition, spawnRotation);
+            if (playerCamera != null)
             {
-                cameraScript.SetTarget(currentPlayer.transform);
-
-                PlayerMovement playerMovement = currentPlayer.GetComponent<PlayerMovement>();
-                if (playerMovement != null && playerMovement.orientation != null)
+                playerCamera.SetActive(true);
+                MoveCamera moveCamera = playerCamera.GetComponent<MoveCamera>();
+                if (moveCamera != null)
                 {
-                    cameraScript.orientation = playerMovement.orientation;
+                    moveCamera.SetTarget(player.transform);
                 }
             }
         }
-    }
-
-    private void InitializeSaveManager()
-    {
-        if (FindObjectOfType<SaveManager>() == null)
-        {
-            GameObject saveManagerObj = new GameObject("SaveManager");
-            saveManager = saveManagerObj.AddComponent<SaveManager>();
-        }
         else
         {
-            saveManager = FindObjectOfType<SaveManager>();
-        }
-
-        if (saveManager != null)
-        {
-            saveManager.Load();
-            GameState gameState = saveManager.GetGameState();
-            lastCheckPointIndex = gameState.LastCheckpoint;
-        }
-    }
-
-    public void PlayerDied(GameObject player)
-    {
-        Vector3 respawnPosition = (lastCheckPointIndex >= 0 && checkPointsContainer != null)
-            ? checkPointsContainer.GetChild(lastCheckPointIndex).position
-            : startPoint.position;
-
-        if (player.TryGetComponent<Rigidbody>(out Rigidbody rb))
-        {
-            rb.linearVelocity = Vector3.zero;
-            rb.position = respawnPosition;
+            Debug.LogError("Player Prefab is not assigned in GameController!");
         }
     }
 
     public void PlayerHitCheckPoint(Transform checkpoint)
     {
-        if (checkpoint == null || checkPointsContainer == null) return;
+        currentCheckpoint = checkpoint;
+        checkpointIndex++;
+        SaveManager.Instance.SetLastCheckpointReached(checkpointIndex);
+        SaveManager.Instance.Save();
+    }
 
-        for (int i = 0; i < checkPointsContainer.childCount; i++)
+    public void RespawnPlayer(GameObject player)
+    {
+        if (currentCheckpoint != null)
         {
-            if (checkpoint == checkPointsContainer.GetChild(i))
+            player.transform.position = currentCheckpoint.position;
+            player.transform.rotation = currentCheckpoint.rotation;
+        }
+        else if (spawnPoint != null)
+        {
+            player.transform.position = spawnPoint.position;
+            player.transform.rotation = spawnPoint.rotation;
+        }
+
+        if (playerCamera != null)
+        {
+            playerCamera.SetActive(true);
+            MoveCamera moveCamera = playerCamera.GetComponent<MoveCamera>();
+            if (moveCamera != null)
             {
-                if (lastCheckPointIndex < i)
-                {
-                    lastCheckPointIndex = i;
-                    saveManager?.SetLastCheckpointReached(i);
-                }
-                break;
+                moveCamera.SetTarget(player.transform);
             }
         }
     }

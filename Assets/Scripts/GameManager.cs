@@ -76,7 +76,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            GameController.Instance.PlayerDied(GameObject.FindGameObjectWithTag("Player"));
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            GameController.Instance.RespawnPlayer(player);
         }
     }
 
