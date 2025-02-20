@@ -7,20 +7,21 @@ public class WallMovable : MonoBehaviour
     [SerializeField] private bool isDown = true;
     [SerializeField] private bool isRandom = true;
     [SerializeField] private float speed = 2f;
+    [SerializeField] private float moveDistance = 2f;
     [SerializeField] private Vector3 moveDirection = Vector3.up;
 
-    private float distance;
     private Vector3 startPos;
+    private Vector3 endPos;
     private bool isWaiting = false;
     private bool canChange = true;
 
     void Awake()
     {
-        distance = transform.localScale.y;
         startPos = transform.position;
+        endPos = startPos + moveDirection * moveDistance;
         if (!isDown)
         {
-            transform.position = startPos - moveDirection * distance;
+            transform.position = startPos;
         }
     }
 
@@ -28,12 +29,14 @@ public class WallMovable : MonoBehaviour
     {
         if (isDown)
         {
-            if (Vector3.Distance(transform.position, startPos + moveDirection * distance) > 0.01f)
+            if (Vector3.Distance(transform.position, endPos) > 0.01f)
             {
-                transform.position += moveDirection * Time.deltaTime * speed;
+                Vector3 newPos = transform.position + moveDirection * Time.deltaTime * speed;
+                transform.position = Vector3.ClampMagnitude(newPos - startPos, moveDistance) + startPos;
             }
             else if (!isWaiting)
             {
+                transform.position = endPos;
                 StartCoroutine(WaitToChange(0.25f));
             }
         }
@@ -43,10 +46,12 @@ public class WallMovable : MonoBehaviour
 
             if (Vector3.Distance(transform.position, startPos) > 0.01f)
             {
-                transform.position -= moveDirection * Time.deltaTime * speed;
+                Vector3 newPos = transform.position - moveDirection * Time.deltaTime * speed;
+                transform.position = Vector3.ClampMagnitude(newPos - startPos, moveDistance) + startPos;
             }
             else if (!isWaiting)
             {
+                transform.position = startPos;
                 StartCoroutine(WaitToChange(0.25f));
             }
         }

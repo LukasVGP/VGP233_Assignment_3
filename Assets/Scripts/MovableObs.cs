@@ -24,27 +24,26 @@ public class MovableObs : MonoBehaviour
 
     void Update()
     {
-        if (isForward)
+        Vector3 currentPosition = transform.position;
+        Vector3 targetPosition = isForward ? targetPos : startPos;
+
+        // Calculate the movement for this frame
+        float moveAmount = speed * Time.deltaTime;
+        Vector3 moveVector = moveDirection * moveAmount;
+
+        // Calculate the distance to target
+        float distanceToTarget = Vector3.Distance(currentPosition, targetPosition);
+
+        if (distanceToTarget <= moveAmount)
         {
-            if (Vector3.Distance(transform.position, targetPos) > 0.01f)
-            {
-                transform.position += moveDirection * Time.deltaTime * speed;
-            }
-            else
-            {
-                isForward = false;
-            }
+            // If we're closer than our movement amount, snap to target
+            transform.position = targetPosition;
+            isForward = !isForward;
         }
         else
         {
-            if (Vector3.Distance(transform.position, startPos) > 0.01f)
-            {
-                transform.position -= moveDirection * Time.deltaTime * speed;
-            }
-            else
-            {
-                isForward = true;
-            }
+            // Move towards target
+            transform.position += isForward ? moveVector : -moveVector;
         }
     }
 }
