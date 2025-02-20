@@ -1,21 +1,10 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
-
-    [Header("Screens")]
-    [SerializeField] private GameObject mainMenuUI;
-    [SerializeField] private GameObject gameplayUI;
-    [SerializeField] private GameObject gameOverUI;
-    [SerializeField] private GameObject winScreenUI;
-
-    [Header("HUD Elements")]
-    [SerializeField] private TextMeshProUGUI livesText;
-    [SerializeField] private TextMeshProUGUI timerText;
-    [SerializeField] private GameObject heartIcon;
 
     private void Awake()
     {
@@ -29,6 +18,17 @@ public class UIManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    [Header("UI Panels")]
+    [SerializeField] private GameObject mainMenuUI;
+    [SerializeField] private GameObject gameplayUI;
+    [SerializeField] private GameObject gameOverUI;
+    [SerializeField] private GameObject winScreenUI;
+
+    [Header("Gameplay UI Elements")]
+    [SerializeField] private TextMeshProUGUI livesText;
+    [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private TextMeshProUGUI scoreText;
 
     private void Start()
     {
@@ -67,34 +67,53 @@ public class UIManager : MonoBehaviour
         winScreenUI.SetActive(true);
     }
 
+    public void StartGame()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.StartGame();
+        }
+
+        ShowGameplay();
+
+        if (gameplayUI != null)
+        {
+            gameplayUI.SetActive(true);
+
+            if (livesText != null)
+            {
+                livesText.gameObject.SetActive(true);
+            }
+
+            if (timerText != null)
+            {
+                timerText.gameObject.SetActive(true);
+            }
+        }
+    }
+
     public void UpdateLives(int lives)
     {
         if (livesText != null)
         {
-            livesText.text = $"x{lives}";
+            livesText.text = $"Lives: {lives}";
         }
     }
 
-    public void UpdateTimer(float timeRemaining)
+    public void UpdateTimerText(float time)
     {
         if (timerText != null)
         {
-            int minutes = Mathf.FloorToInt(timeRemaining / 60);
-            int seconds = Mathf.FloorToInt(timeRemaining % 60);
-            timerText.text = $"{minutes:00}:{seconds:00}";
+            timerText.text = $"Time: {time:F1}";
         }
     }
 
-    public void StartGame()
+    public void UpdateScoreText(int score)
     {
-        ShowGameplay();
-        GameManager.Instance.StartGame();
-    }
-
-    public void ReturnToMainMenu()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        ShowMainMenu();
+        if (scoreText != null)
+        {
+            scoreText.text = $"Score: {score}";
+        }
     }
 
     public void QuitGame()
