@@ -4,9 +4,9 @@ public class KillVolume : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if(other != null && other.tag == "Player")
+        if (other != null && other.CompareTag("Player"))
         {
-            GameController.Instance.PlayerDied(other.gameObject);
+            GameManager.Instance.PlayerDied();
         }
     }
 }
