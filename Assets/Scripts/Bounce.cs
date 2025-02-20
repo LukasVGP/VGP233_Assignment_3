@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Bounce : MonoBehaviour
 {
@@ -11,18 +9,16 @@ public class Bounce : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        foreach (ContactPoint contact in collision.contacts)
+        if (collision.gameObject.CompareTag("Player"))
         {
-            Debug.DrawRay(contact.point, contact.normal, Color.white);
-            if (collision.gameObject.CompareTag("Player"))
+            ContactPoint contact = collision.GetContact(0);
+            hitDir = contact.normal;
+
+            PlayerMovement playerMovement = collision.gameObject.GetComponent<PlayerMovement>();
+            if (playerMovement != null)
             {
-                hitDir = contact.normal;
-                PlayerMovement playerMovement = collision.gameObject.GetComponent<PlayerMovement>();
-                if (playerMovement != null)
-                {
-                    playerMovement.HitPlayer(-hitDir * force, stunTime);
-                }
-                return;
+                playerMovement.HitPlayer(-hitDir * force, stunTime);
+                Debug.DrawRay(contact.point, contact.normal * 2, Color.red, 2f);
             }
         }
     }

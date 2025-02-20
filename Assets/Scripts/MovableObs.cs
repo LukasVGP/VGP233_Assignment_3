@@ -1,70 +1,50 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class MovableObs : MonoBehaviour
 {
-	public float distance = 5f; //Distance that moves the object
-	public bool horizontal = true; //If the movement is horizontal or vertical
-	public float speed = 3f;
-	public float offset = 0f; //If yo want to modify the position at the start 
+    [Header("Movement Settings")]
+    [SerializeField] private float distance = 5f;
+    [SerializeField] private float speed = 3f;
+    [SerializeField] private float offset = 0f;
 
-	private bool isForward = true; //If the movement is out
-	private Vector3 startPos;
-   
+    [Header("Movement Direction")]
+    [SerializeField] private Vector3 moveDirection = Vector3.right;
+
+    private bool isForward = true;
+    private Vector3 startPos;
+    private Vector3 targetPos;
+
     void Awake()
     {
-		startPos = transform.position;
-		if (horizontal)
-			transform.position += Vector3.right * offset;
-		else
-			transform.position += Vector3.forward * offset;
-	}
+        startPos = transform.position;
+        moveDirection = moveDirection.normalized;
+        transform.position += moveDirection * offset;
+        targetPos = startPos + moveDirection * distance;
+    }
 
-    // Update is called once per frame
     void Update()
     {
-		if (horizontal)
-		{
-			if (isForward)
-			{
-				if (transform.position.x < startPos.x + distance)
-				{
-					transform.position += Vector3.right * Time.deltaTime * speed;
-				}
-				else
-					isForward = false;
-			}
-			else
-			{
-				if (transform.position.x > startPos.x)
-				{
-					transform.position -= Vector3.right * Time.deltaTime * speed;
-				}
-				else
-					isForward = true;
-			}
-		}
-		else
-		{
-			if (isForward)
-			{
-				if (transform.position.z < startPos.z + distance)
-				{
-					transform.position += Vector3.forward * Time.deltaTime * speed;
-				}
-				else
-					isForward = false;
-			}
-			else
-			{
-				if (transform.position.z > startPos.z)
-				{
-					transform.position -= Vector3.forward * Time.deltaTime * speed;
-				}
-				else
-					isForward = true;
-			}
-		}
+        if (isForward)
+        {
+            if (Vector3.Distance(transform.position, targetPos) > 0.01f)
+            {
+                transform.position += moveDirection * Time.deltaTime * speed;
+            }
+            else
+            {
+                isForward = false;
+            }
+        }
+        else
+        {
+            if (Vector3.Distance(transform.position, startPos) > 0.01f)
+            {
+                transform.position -= moveDirection * Time.deltaTime * speed;
+            }
+            else
+            {
+                isForward = true;
+            }
+        }
     }
 }

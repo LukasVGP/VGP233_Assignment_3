@@ -1,80 +1,85 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
 public class WallMovable : MonoBehaviour
 {
-	public bool isDown = true; //If the wall starts down, if not you must modify to false
-	public bool isRandom = true; //If you want that the wall go down random
-	public float speed = 2f;
+    [Header("Movement Settings")]
+    [SerializeField] private bool isDown = true;
+    [SerializeField] private bool isRandom = true;
+    [SerializeField] private float speed = 2f;
+    [SerializeField] private Vector3 moveDirection = Vector3.up;
 
-	private float height; //Height of the platform
-	private float posYDown; //Start position of the Y coord
-	private bool isWaiting = false; //If the wall is waiting up or down
-	private bool canChange = true; //If the wall is thinking if should go down or not
+    private float distance;
+    private Vector3 startPos;
+    private bool isWaiting = false;
+    private bool canChange = true;
 
-	void Awake()
+    void Awake()
     {
-		height = transform.localScale.y;
-		if(isDown)
-			posYDown = transform.position.y;
-		else
-			posYDown = transform.position.y - height;
-	}
+        distance = transform.localScale.y;
+        startPos = transform.position;
+        if (!isDown)
+        {
+            transform.position = startPos - moveDirection * distance;
+        }
+    }
 
-    // Update is called once per frame
     void Update()
     {
-		if (isDown)
-		{
-			if (transform.position.y < posYDown + height)
-			{
-				transform.position += Vector3.up * Time.deltaTime * speed;
-			}
-			else if (!isWaiting)
-				StartCoroutine(WaitToChange(0.25f));
-		}
-		else
-		{
-			if (!canChange)
-				return;
+        if (isDown)
+        {
+            if (Vector3.Distance(transform.position, startPos + moveDirection * distance) > 0.01f)
+            {
+                transform.position += moveDirection * Time.deltaTime * speed;
+            }
+            else if (!isWaiting)
+            {
+                StartCoroutine(WaitToChange(0.25f));
+            }
+        }
+        else
+        {
+            if (!canChange) return;
 
-			if (transform.position.y > posYDown)
-			{
-				transform.position -= Vector3.up * Time.deltaTime * speed;
-			}
-			else if (!isWaiting)
-				StartCoroutine(WaitToChange(0.25f));
-		}
-	}
+            if (Vector3.Distance(transform.position, startPos) > 0.01f)
+            {
+                transform.position -= moveDirection * Time.deltaTime * speed;
+            }
+            else if (!isWaiting)
+            {
+                StartCoroutine(WaitToChange(0.25f));
+            }
+        }
+    }
 
-	//Function that wait before go down or up
-	IEnumerator WaitToChange(float time)
-	{
-		isWaiting = true;
-		yield return new WaitForSeconds(time);
-		isWaiting = false;
-		isDown = !isDown;
+    IEnumerator WaitToChange(float time)
+    {
+        isWaiting = true;
+        yield return new WaitForSeconds(time);
+        isWaiting = false;
+        isDown = !isDown;
 
-		if (isRandom && !isDown) //If is wall up and is random
-		{
-			int num = Random.Range(0, 2);
-			//Debug.Log(num);
-			if (num == 1)
-				StartCoroutine(Retry(1.5f));
-		}
-	}
+        if (isRandom && !isDown)
+        {
+            if (Random.value > 0.5f)
+            {
+                StartCoroutine(Retry(1.5f));
+            }
+        }
+    }
 
-	//Function that checks every 1.25secs if can go down the wall
-	IEnumerator Retry(float time)
-	{
-		canChange = false;
-		yield return new WaitForSeconds(time);
-		int num = Random.Range(0, 2);
-		//Debug.Log("2-"+num);
-		if (num == 1)
-			StartCoroutine(Retry(1.25f));
-		else
-			canChange = true;
-	}
+    IEnumerator Retry(float time)
+    {
+        canChange = false;
+        yield return new WaitForSeconds(time);
+
+        if (Random.value > 0.5f)
+        {
+            StartCoroutine(Retry(1.25f));
+        }
+        else
+        {
+            canChange = true;
+        }
+    }
 }
