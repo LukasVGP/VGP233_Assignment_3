@@ -16,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpForce = 1000f;
     [SerializeField] private float groundDrag = 5f;
     [SerializeField] private float rotateSpeed = 5f;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float groundCheckRadius = 0.3f;
 
     private float horizontalInput;
     private float verticalInput;
@@ -30,12 +32,12 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         rb.angularDamping = 10f;
-        isGrounded = true;
         currentMoveSpeed = walkSpeed;
     }
 
     void Update()
     {
+        CheckGround();
         GetPlayerInput();
         HandleRotation();
         UpdateAnimator();
@@ -47,13 +49,16 @@ public class PlayerMovement : MonoBehaviour
     {
         if (shouldJump)
         {
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-            rb.AddForce(Vector3.up * jumpForce * 2f, ForceMode.Impulse);
-            shouldJump = false;
+            PerformJump();
         }
         MovePlayer();
         ControlSpeed();
         ApplyDrag();
+    }
+
+    private void CheckGround()
+    {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
     }
 
     private void GetPlayerInput()
@@ -88,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("Strafe", horizontalInput);
         animator.SetBool("IsMoving", (Mathf.Abs(horizontalInput) > 0.0f || Mathf.Abs(verticalInput) > 0.0f));
         animator.SetBool("Run", isRunning);
+        animator.SetBool("IsGrounded", isGrounded);
     }
 
     private void HandleJump()
@@ -95,7 +101,15 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             shouldJump = true;
+            animator.SetTrigger("Jump");
         }
+    }
+
+    private void PerformJump()
+    {
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        shouldJump = false;
     }
 
     private void MovePlayer()
@@ -117,21 +131,5 @@ public class PlayerMovement : MonoBehaviour
     private void ApplyDrag()
     {
         rb.linearDamping = isGrounded ? groundDrag : 0;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Ground"))
-        {
-            isGrounded = true;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
     }
 }
