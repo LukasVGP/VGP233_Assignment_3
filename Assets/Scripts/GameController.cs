@@ -20,6 +20,12 @@ public class GameController : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            if (SaveManager.Instance == null)
+            {
+                GameObject saveManagerObject = new GameObject("SaveManager");
+                saveManagerObject.AddComponent<SaveManager>();
+            }
         }
         else
         {
@@ -53,10 +59,13 @@ public class GameController : MonoBehaviour
 
     public void PlayerHitCheckPoint(Transform checkpoint)
     {
-        currentCheckpoint = checkpoint;
-        checkpointIndex++;
-        SaveManager.Instance.SetLastCheckpointReached(checkpointIndex);
-        SaveManager.Instance.Save();
+        if (SaveManager.Instance != null)
+        {
+            currentCheckpoint = checkpoint;
+            checkpointIndex++;
+            SaveManager.Instance.SetLastCheckpointReached(checkpointIndex);
+            SaveManager.Instance.Save();
+        }
     }
 
     public void RespawnPlayer(GameObject player)
