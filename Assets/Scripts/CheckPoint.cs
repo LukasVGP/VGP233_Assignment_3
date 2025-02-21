@@ -1,19 +1,15 @@
 using UnityEngine;
 
-public class CheckPoint : MonoBehaviour
+public class Checkpoint : MonoBehaviour
 {
+    [SerializeField] private int checkpointIndex;
     private void OnTriggerEnter(Collider other)
     {
-        if(other != null)
+        if (other.CompareTag("Player"))
         {
-            if (other.tag == "Player")
-            {
-                GameController.Instance.PlayerHitCheckPoint(transform);
-            }
-            else if(other.tag == "Checkpoint" && tag == "Player")
-            {
-                GameController.Instance.PlayerHitCheckPoint(other.transform);
-            }
+            Debug.Log($"Checkpoint {checkpointIndex} reached!"); // Add this debug line
+            SaveManager.Instance.SetLastCheckpointReached(checkpointIndex);
+            SaveManager.Instance.Save();
         }
     }
 }
