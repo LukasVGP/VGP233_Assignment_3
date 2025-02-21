@@ -134,19 +134,27 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateAnimator()
     {
-        animator.SetFloat("Walk", verticalInput);
-        animator.SetFloat("Strafe", horizontalInput);
-        animator.SetBool("IsMoving", (Mathf.Abs(horizontalInput) > 0.0f || Mathf.Abs(verticalInput) > 0.0f));
-        animator.SetBool("Run", isRunning);
-        animator.SetBool("IsGrounded", isGrounded);
+        if (animator != null)
+        {
+            animator.SetFloat("Walk", verticalInput);
+            animator.SetFloat("Strafe", horizontalInput);
+            animator.SetBool("IsMoving", (Mathf.Abs(horizontalInput) > 0.0f || Mathf.Abs(verticalInput) > 0.0f));
+            animator.SetBool("Run", isRunning);
+            animator.SetBool("IsGrounded", isGrounded);
+        }
     }
+
+
 
     private void HandleJump()
     {
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             shouldJump = true;
-            animator.SetTrigger("Jump");
+            if (animator != null)
+            {
+                animator.SetTrigger("Jump");
+            }
         }
     }
 

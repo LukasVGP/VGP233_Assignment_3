@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviour
             Destroy(existingPlayer);
         }
 
+        ResetLevel();
         GameController.Instance.SpawnPlayer();
     }
 
@@ -76,9 +77,18 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            ResetLevel();
             GameObject player = GameObject.FindGameObjectWithTag("Player");
-            GameController.Instance.RespawnPlayer(player);
+            if (player != null)
+            {
+                GameController.Instance.RespawnPlayer(player);
+            }
         }
+    }
+
+    public void ResetLevel()
+    {
+        FallPlat.ResetAllPlatforms();
     }
 
     private void GameOver()

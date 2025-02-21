@@ -1,27 +1,46 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class FallPlat : MonoBehaviour
 {
-	public float fallTime = 0.5f;
+    public float fallTime = 0.5f;
+    private Vector3 startPosition;
 
+    // Static list to track all platforms
+    private static List<FallPlat> allPlatforms = new List<FallPlat>();
 
-	void OnCollisionEnter(Collision collision)
-	{
-		foreach (ContactPoint contact in collision.contacts)
-		{
-			//Debug.DrawRay(contact.point, contact.normal, Color.white);
-			if (collision.gameObject.tag == "Player")
-			{
-				StartCoroutine(Fall(fallTime));
-			}
-		}
-	}
+    void Start()
+    {
+        startPosition = transform.position;
+        allPlatforms.Add(this);
+    }
 
-	IEnumerator Fall(float time)
-	{
-		yield return new WaitForSeconds(time);
-		Destroy(gameObject);
-	}
+    void OnDestroy()
+    {
+        allPlatforms.Remove(this);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            StartCoroutine(Fall(fallTime));
+        }
+    }
+
+    IEnumerator Fall(float time)
+    {
+        yield return new WaitForSeconds(time);
+        gameObject.SetActive(false);
+    }
+
+    public static void ResetAllPlatforms()
+    {
+        foreach (FallPlat platform in allPlatforms)
+        {
+            platform.gameObject.SetActive(true);
+            platform.transform.position = platform.startPosition;
+        }
+    }
 }
