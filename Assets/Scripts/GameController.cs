@@ -100,7 +100,7 @@ public class GameController : MonoBehaviour
         {
             PlayerDied(player);
             SetupCamera();
-            Debug.Log($"Player {player.name} respawned successfully");
+            Debug.Log($"Player {player.name} respawned at checkpoint {lastCheckPointIndex}");
         }
     }
 
@@ -151,7 +151,7 @@ public class GameController : MonoBehaviour
             if (checkpoints[i] == checkpoint)
             {
                 lastCheckPointIndex = i;
-                Debug.Log($"Checkpoint {i} activated");
+                Debug.Log($"Checkpoint {i} activated at position {checkpoint.position}");
 
                 if (saveManager != null)
                 {
@@ -167,8 +167,9 @@ public class GameController : MonoBehaviour
     {
         if (player.TryGetComponent<Rigidbody>(out Rigidbody rb))
         {
-            rb.position = position;
             rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.position = position;
         }
         else
         {

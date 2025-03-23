@@ -6,6 +6,7 @@ public class KillVolume : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            Debug.Log("Player hit kill volume");
             GameManager.Instance.PlayerDied();
         }
     }
